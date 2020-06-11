@@ -1,6 +1,5 @@
 package gui;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -15,12 +14,12 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import model.services.DepartmentService;
 
 public class MainViewController implements Initializable {
 
 	@FXML
 	private MenuItem menuItemSeller;
-	// padrão para declaração de elementos MenuItem
 
 	@FXML
 	private MenuItem menuItemDepartment;
@@ -37,7 +36,7 @@ public class MainViewController implements Initializable {
 	@FXML
 	private void onMenuItemDepartmentAction() {
 
-		System.out.println("onMenuItemDepartmentAction");
+		loadView2("/gui/DepartmentList.fxml");
 	}
 
 	@FXML
@@ -53,21 +52,74 @@ public class MainViewController implements Initializable {
 	}
 
 	private synchronized void loadView(String absoluteName) {
-		
-		// a palavra chave synchronized garante que esse trecho de código não seja
+
+		// a palavra reservsada synchronized garante que esse trecho de código não seja
 		// interrompido durante o multi threading.
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			VBox newVBox = loader.load();
 
 			Scene mainScene = Main.getMainScene();
-			// faz uma referência ao vbox que está na janela principal.
+			// faz uma referência a mainScene.
 			VBox mainVBox = (VBox) ((ScrollPane) mainScene.getRoot()).getContent();
+			// o método getRoot() pega o primeiro elemento da MainView. O cast feito pra
+			// ScrollPane
+			// se dá pelo fato do primeiro elemento da view ser um ScrollPane, depois um
+			// cast
+			// pra VBox porque a variável que vai receber esse elemento é um
+			// VBox. O método getContent referencia os elementos dentro do bloco <content/>
+			// no Mainview, capturando
+			// uma referência para o VBox que tá na MainView.
 
 			Node mainMenu = mainVBox.getChildren().get(0);
+			// guarda uma referência do MenuBar
 			mainVBox.getChildren().clear();
+			// Limpa todos os componentes filhos do VBox da MainView
 			mainVBox.getChildren().add(mainMenu);
+			// Adiciona o menubar já existente no MainMenu
 			mainVBox.getChildren().addAll(newVBox.getChildren());
+			// Insere o VBox com conteúdo da view que foi passada como parâmetro
+		}
+
+		catch (Exception e) {
+			Alerts.showAlert("IO Exception", "Error loading View", e.getMessage(), AlertType.ERROR);
+		}
+	}
+
+	private synchronized void loadView2(String absoluteName) {
+
+		// a palavra reservsada synchronized garante que esse trecho de código não seja
+		// interrompido durante o multi threading.
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
+			VBox newVBox = loader.load();
+
+			Scene mainScene = Main.getMainScene();
+			// faz uma referência a mainScene.
+			VBox mainVBox = (VBox) ((ScrollPane) mainScene.getRoot()).getContent();
+			// o método getRoot() pega o primeiro elemento da MainView. O cast feito pra
+			// ScrollPane
+			// se dá pelo fato do primeiro elemento da view ser um ScrollPane, depois um
+			// cast
+			// pra VBox porque a variável que vai receber esse elemento é um
+			// VBox. O método getContent referencia os elementos dentro do bloco <content/>
+			// no Mainview, capturando
+			// uma referência para o VBox que tá na MainView.
+
+			Node mainMenu = mainVBox.getChildren().get(0);
+			// guarda uma referência do MenuBar
+			mainVBox.getChildren().clear();
+			// Limpa todos os componentes filhos do VBox da MainView
+			mainVBox.getChildren().add(mainMenu);
+			// Adiciona o menubar já existente no MainMenu
+			mainVBox.getChildren().addAll(newVBox.getChildren());
+			// Insere o VBox com conteúdo da view que foi passada como parâmetro
+
+			DepartmentListController controller = loader.getController();
+			// a partir do objeto loader da classe FXMLLoader, podemos tanto
+			// carregar uma view como também acesser o seu controller.
+			controller.setDeparmentService(new DepartmentService());
+			controller.updateTableView();
 		}
 
 		catch (Exception e) {

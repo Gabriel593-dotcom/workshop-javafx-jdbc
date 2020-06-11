@@ -15,7 +15,7 @@ public class Main extends Application {
 		try {
 
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/MainView.fxml"));
-			// chamar o arquivo através de uma instância permite que manipular a tela antes
+			// chamar o arquivo através de uma instância permite manipular a tela antes
 			// de carregar.
 			ScrollPane scrollPane = loader.load();
 			scrollPane.setFitToHeight(true);
